@@ -5,8 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.text.DateFormat;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,9 +17,11 @@ import javax.swing.table.DefaultTableModel;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.TextProgressMonitor;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevCommitList;
 
+import repowalker.DateCommitFilter;
 import repowalker.RepositoryHandler;
 
 public class GitBrowser {
@@ -44,7 +45,9 @@ public class GitBrowser {
 			try {
 				new RepositoryHandler(txtRepoURL.getText(), monitorClone);
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(frmGitrepobrowser, "Erro ao clonar o repositório, verifique sua conexão e tente novamente :(");
+				JOptionPane
+						.showMessageDialog(frmGitrepobrowser,
+								"Erro ao clonar o repositório, verifique sua conexão e tente novamente :(");
 			}
 		}
 	}
@@ -146,29 +149,31 @@ public class GitBrowser {
 				try {
 					repoHandler = new RepositoryHandler();
 					repoHandler.openExistingRepository(txtRepoURL.getText());
-					ArrayList<String> stringList = repoHandler
-							.getAllRevisions();
-					table.setModel(new TableHandler().getModelFromStrings(
-							stringList, "Commit OIDs"));
-					lblCommitsCarregados.setText("Commits Carregados: "+stringList.size());
+					Object[] dates = { DateFormat.getDateInstance().parse("01/01/1990"),DateFormat.getDateInstance().parse("01/01/2099") };
+					RevCommitList<RevCommit> commits = repoHandler
+							.getRevisions(new DateCommitFilter(dates,
+									repoHandler.getAllRevisions()));
+					table.setModel(new TableHandler().getModelFromCommitList(
+							commits, "Commit OIDs"));
+					lblCommitsCarregados.setText("Commits Carregados: "
+							+ commits.size());
 				} catch (Exception erro) {
-					JOptionPane.showMessageDialog(frmGitrepobrowser, "Erro ao Carregar os Commits, verifique se o repositório foi clonado :(");
+					erro.printStackTrace();
+					JOptionPane
+							.showMessageDialog(frmGitrepobrowser,
+									"Erro ao Carregar os Commits, verifique se o repositório foi clonado :(");
 				}
 			}
 		});
 		frmGitrepobrowser.getContentPane().add(btnCarregarCommits, "cell 1 4");
-		
+
 		lblCommitsCarregados = new JLabel("Commits Carregados: N/A");
-		frmGitrepobrowser.getContentPane().add(lblCommitsCarregados, "cell 5 6");
+		frmGitrepobrowser.getContentPane()
+				.add(lblCommitsCarregados, "cell 5 6");
 
 		table = new JTable();
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Commit OID"
-			}
-		));
+		table.setModel(new DefaultTableModel(new Object[][] {},
+				new String[] { "Commit OID" }));
 		frmGitrepobrowser.getContentPane().add(table, "cell 0 7 6 8,grow");
 	}
 
