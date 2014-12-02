@@ -5,8 +5,15 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileWriter;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,6 +30,9 @@ import org.eclipse.jgit.lib.TextProgressMonitor;
 import repositoryhandler.Commit;
 import repositoryhandler.DateCommitFilter;
 import repositoryhandler.GitRepositoryHandler;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateExceptionHandler;
 
 public class GitBrowser {
 
@@ -38,6 +48,7 @@ public class GitBrowser {
 			}
 		}
 	}
+
 	/**
 	 * Launch the application.
 	 */
@@ -53,6 +64,7 @@ public class GitBrowser {
 			}
 		});
 	}
+
 	private JFrame frmGitrepobrowser;
 	private JLabel lblUrlDoRepositrio;
 	private JTextField txtRepoURL;
@@ -149,17 +161,61 @@ public class GitBrowser {
 				try {
 					repoHandler = new GitRepositoryHandler();
 					repoHandler.openExistingRepository(txtRepoURL.getText());
-					Object[] dates = {
-							DateFormat.getDateInstance().parse("01/01/1990"),
-							DateFormat.getDateInstance().parse("01/01/2099") };
+
 					ArrayList<Commit> commits = repoHandler
-							.getRevisions(new DateCommitFilter(dates,
-									repoHandler.getAllRevisions(true)));
+							.getAllRevisions(true);
+
+					Object[] dates = {
+							DateFormat.getDateInstance().parse("01/01/2013"),
+							DateFormat.getDateInstance().parse("31/12/2014") };
+
+					commits = repoHandler.getRevisions(new DateCommitFilter(
+							dates, commits));
 
 					table.setModel(new TableHandler().getModelFromCommitList(
 							commits, "Commit OIDs"));
 					lblCommitsCarregados.setText("Commits Carregados: "
 							+ commits.size());
+
+					TreeMap<String, Integer> mesesAno = new TreeMap<>();
+
+					for (Commit commit : commits) {
+						@SuppressWarnings("deprecation")
+						String key = ""
+								+ (commit.getHumanDate().getYear() + 1900)
+								+ "/"
+								+ Integer.toHexString((commit.getHumanDate()
+										.getMonth() + 1));
+						if (!mesesAno.containsKey(key)) {
+							mesesAno.put(key, 1);
+						} else {
+							mesesAno.put(key, mesesAno.get(key) + 1);
+						}
+					}
+
+					Map root = new HashMap();
+					root.put("months", mesesAno);
+
+					Iterator<Entry<String, Integer>> ite = mesesAno.entrySet()
+							.iterator();
+					while (ite.hasNext()) {
+						Entry<String, Integer> atual = ite.next();
+						System.out.println(atual.getKey() + " - "
+								+ atual.getValue());
+					}
+
+					Configuration cfg = new Configuration(
+							Configuration.VERSION_2_3_20);
+					cfg.setDirectoryForTemplateLoading(new File("./templates"));
+					cfg.setDefaultEncoding("UTF-8");
+					cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+
+					Template temp = cfg.getTemplate("template_bassline.ftl");
+
+					FileWriter fr = new FileWriter("./result1.ly", false);
+
+					temp.process(root, fr);
+
 				} catch (Exception erro) {
 					erro.printStackTrace();
 					JOptionPane
