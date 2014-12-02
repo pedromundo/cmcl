@@ -1,9 +1,11 @@
-package repowalker;
+package repositoryhandler;
+
+import java.util.ArrayList;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevCommitList;
 
-import Exceptions.BadFilterInitException;
+import exceptions.BadFilterInitException;
 
 public class StepCommitFilter extends CommitFilter {
 	/*
@@ -11,7 +13,13 @@ public class StepCommitFilter extends CommitFilter {
 	 * which it skips commits when filtering
 	 */
 
-	public StepCommitFilter(Object[] args, RevCommitList<RevCommit> commits)
+	public StepCommitFilter(Object[] args, ArrayList<Commit> commits)
+			throws BadFilterInitException {
+		super(2, commits);
+		this.setArgs(args);
+	}
+
+	StepCommitFilter(Object[] args, RevCommitList<RevCommit> commits)
 			throws BadFilterInitException {
 		super(1, commits);
 		this.setArgs(args);
@@ -19,24 +27,24 @@ public class StepCommitFilter extends CommitFilter {
 
 	@Override
 	public void doFilterCommit() {
-		RevCommitList<RevCommit> ret = new RevCommitList<RevCommit>();
+		RevCommitList<RevCommit> filteredCommits = new RevCommitList<RevCommit>();
 		RevCommitList<RevCommit> commits = this.getCommits();
 		// Sim, quem usa a classe tem que saber :(
 		Integer step = (Integer) this.getArgs()[0];
 
 		if (step > commits.size()) {
-			ret.add(commits.get(0));
-			ret.add(commits.get(commits.size() - 1));
+			filteredCommits.add(commits.get(0));
+			filteredCommits.add(commits.get(commits.size() - 1));
 		} else {
 			for (int i = 0; i < commits.size(); i += step) {
 				RevCommit revCommit = commits.get(i);
-				ret.add(revCommit);
+				filteredCommits.add(revCommit);
 			}
 			if (commits.size() % step != 0) {
-				ret.add(commits.get(commits.size() - 1));
+				filteredCommits.add(commits.get(commits.size() - 1));
 			}
 		}
 
-		this.setCommits(ret);
+		this.setCommits(filteredCommits);
 	}
 }

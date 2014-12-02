@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DateFormat;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,32 +19,18 @@ import javax.swing.table.DefaultTableModel;
 import net.miginfocom.swing.MigLayout;
 
 import org.eclipse.jgit.lib.TextProgressMonitor;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevCommitList;
 
-import repowalker.DateCommitFilter;
-import repowalker.RepositoryHandler;
+import repositoryhandler.Commit;
+import repositoryhandler.DateCommitFilter;
+import repositoryhandler.GitRepositoryHandler;
 
 public class GitBrowser {
-
-	private JFrame frmGitrepobrowser;
-	private JLabel lblUrlDoRepositrio;
-	private JTextField txtRepoURL;
-	private JButton btnCloneRepo;
-	private JLabel lblStatusDoRepositrio;
-	private JLabel lblNa;
-	private RepositoryHandler repoHandler;
-	private TextProgressMonitor monitorClone;
-	private JLabel lblPorcento;
-	private JTable table;
-	private JButton btnCarregarCommits;
-	private JLabel lblCommitsCarregados;
 
 	private class RunClone implements Runnable {
 		@Override
 		public void run() {
 			try {
-				new RepositoryHandler(txtRepoURL.getText(), monitorClone);
+				new GitRepositoryHandler(txtRepoURL.getText(), monitorClone);
 			} catch (Exception e) {
 				JOptionPane
 						.showMessageDialog(frmGitrepobrowser,
@@ -51,7 +38,6 @@ public class GitBrowser {
 			}
 		}
 	}
-
 	/**
 	 * Launch the application.
 	 */
@@ -67,6 +53,20 @@ public class GitBrowser {
 			}
 		});
 	}
+	private JFrame frmGitrepobrowser;
+	private JLabel lblUrlDoRepositrio;
+	private JTextField txtRepoURL;
+	private JButton btnCloneRepo;
+	private JLabel lblStatusDoRepositrio;
+	private JLabel lblNa;
+	private GitRepositoryHandler repoHandler;
+	private TextProgressMonitor monitorClone;
+	private JLabel lblPorcento;
+	private JTable table;
+
+	private JButton btnCarregarCommits;
+
+	private JLabel lblCommitsCarregados;
 
 	/**
 	 * Create the application.
@@ -82,13 +82,6 @@ public class GitBrowser {
 		// My stuff
 		this.monitorClone = new TextProgressMonitor() {
 			@Override
-			protected void onUpdate(String taskName, int cmp, int totalWork,
-					int pcnt) {
-				super.onUpdate(taskName, cmp, totalWork, pcnt);
-				lblPorcento.setText(pcnt + "%");
-			}
-
-			@Override
 			protected void onEndTask(String taskName, int cmp, int totalWork,
 					int pcnt) {
 				if (taskName.contains("Updating references")) {
@@ -96,6 +89,13 @@ public class GitBrowser {
 					lblNa.setText("OK!");
 					lblNa.setForeground(Color.DARK_GRAY);
 				}
+			}
+
+			@Override
+			protected void onUpdate(String taskName, int cmp, int totalWork,
+					int pcnt) {
+				super.onUpdate(taskName, cmp, totalWork, pcnt);
+				lblPorcento.setText(pcnt + "%");
 			}
 		};
 		// End my stuff
@@ -121,9 +121,9 @@ public class GitBrowser {
 		btnCloneRepo.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JOptionPane.showMessageDialog(frmGitrepobrowser, "Clonando!");
 				Thread t = new Thread(new RunClone());
 				t.start();
+				JOptionPane.showMessageDialog(frmGitrepobrowser, "Clonando!");
 			}
 		});
 
@@ -147,12 +147,15 @@ public class GitBrowser {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					repoHandler = new RepositoryHandler();
+					repoHandler = new GitRepositoryHandler();
 					repoHandler.openExistingRepository(txtRepoURL.getText());
-					Object[] dates = { DateFormat.getDateInstance().parse("01/01/1990"),DateFormat.getDateInstance().parse("01/01/2099") };
-					RevCommitList<RevCommit> commits = repoHandler
+					Object[] dates = {
+							DateFormat.getDateInstance().parse("01/01/1990"),
+							DateFormat.getDateInstance().parse("01/01/2099") };
+					ArrayList<Commit> commits = repoHandler
 							.getRevisions(new DateCommitFilter(dates,
-									repoHandler.getAllRevisions()));
+									repoHandler.getAllRevisions(true)));
+
 					table.setModel(new TableHandler().getModelFromCommitList(
 							commits, "Commit OIDs"));
 					lblCommitsCarregados.setText("Commits Carregados: "

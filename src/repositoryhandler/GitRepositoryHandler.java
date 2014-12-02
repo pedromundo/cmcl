@@ -1,7 +1,8 @@
-package repowalker;
+package repositoryhandler;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.jgit.api.Git;
@@ -22,14 +23,16 @@ import org.eclipse.jgit.revwalk.RevCommitList;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.util.FileUtils;
 
-public class RepositoryHandler {
+import util.ArrayListQuickSort;
+
+public class GitRepositoryHandler {
 	private File repoPath;
 	private Git gitObject;
 
-	public RepositoryHandler() {
+	public GitRepositoryHandler() {
 	}
 
-	public RepositoryHandler(String repositoryUrl, ProgressMonitor monitor)
+	public GitRepositoryHandler(String repositoryUrl, ProgressMonitor monitor)
 			throws InvalidRemoteException, TransportException, GitAPIException,
 			IOException {
 		String urlParts[] = repositoryUrl.split("/");
@@ -44,17 +47,46 @@ public class RepositoryHandler {
 				.setProgressMonitor(monitor).call();
 	}
 
+	public ArrayList<Commit> getAllRevisions(Boolean dateAscending)
+			throws NoHeadException, GitAPIException {
+		ArrayList<Commit> ret = new ArrayList<Commit>();
+		LogCommand logcommand = this.gitObject.log();
+		Iterator<RevCommit> ite = logcommand.call().iterator();
+		while (ite.hasNext()) {
+			ret.add(new Commit(ite.next()));
+		}
+
+		/*
+		 * Whether or not the user wants the commits to be ascending in date
+		 * we'll do
+		 */
+		if (dateAscending) {
+			ArrayListQuickSort sorter = new ArrayListQuickSort();
+			sorter.sortCommitsByDate(ret);
+		}
+
+		return ret;
+	}
+
+	public ArrayList<Commit> getRevisions(CommitFilter filter)
+			throws NoHeadException, GitAPIException {
+		RevCommitList<RevCommit> temp = filter.getFilteredCommits();
+		ArrayList<Commit> ret = new ArrayList<Commit>();
+
+		for (RevCommit commit : temp) {
+			ret.add(new Commit(commit));
+		}
+
+		return ret;
+	}
+
 	public void openExistingRepository(String repositoryUrl) throws IOException {
 		String urlParts[] = repositoryUrl.split("/");
 		this.repoPath = new File("./" + urlParts[urlParts.length - 1] + "/.git");
 
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
-		Repository repository = builder.setGitDir(repoPath).readEnvironment() // scan
-																				// environment
-																				// GIT_*
-																				// variables
-				.findGitDir() // scan up the file system tree
-				.build();
+		Repository repository = builder.setGitDir(repoPath).readEnvironment()
+				.findGitDir().build();
 
 		this.gitObject = Git.wrap(repository);
 		this.gitObject = Git.open(repoPath);
@@ -66,23 +98,6 @@ public class RepositoryHandler {
 			NoHeadException, TransportException, GitAPIException {
 		this.gitObject.pull().call();
 
-	}
-
-	public RevCommitList<RevCommit> getAllRevisions() throws NoHeadException,
-			GitAPIException {
-		RevCommitList<RevCommit> ret = new RevCommitList<RevCommit>();
-		LogCommand logcommand = this.gitObject.log();
-		Iterator<RevCommit> ite = logcommand.call().iterator();
-		while (ite.hasNext()) {
-			ret.add(ite.next());
-		}
-		return ret;
-	}
-
-	public RevCommitList<RevCommit> getRevisions(CommitFilter filter)
-			throws NoHeadException, GitAPIException {
-		RevCommitList<RevCommit> ret = filter.getFilteredCommits();
-		return ret;
 	}
 
 }
