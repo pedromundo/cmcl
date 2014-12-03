@@ -30,6 +30,7 @@ import org.eclipse.jgit.lib.TextProgressMonitor;
 import repositoryhandler.Commit;
 import repositoryhandler.DateCommitFilter;
 import repositoryhandler.GitRepositoryHandler;
+import util.Interpolator;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
@@ -193,15 +194,35 @@ public class GitBrowser {
 						}
 					}
 
-					Map root = new HashMap();
+					Map<String, TreeMap<String, Integer>> root = new HashMap<String, TreeMap<String, Integer>>();
 					root.put("months", mesesAno);
 
 					Iterator<Entry<String, Integer>> ite = mesesAno.entrySet()
 							.iterator();
+					
+					int minBpm = Integer.MAX_VALUE;
+					int maxBpm = Integer.MIN_VALUE;
+					
 					while (ite.hasNext()) {
 						Entry<String, Integer> atual = ite.next();
-						System.out.println(atual.getKey() + " - "
-								+ atual.getValue());
+						int atualInt = atual.getValue();
+						if(atualInt < minBpm){
+							minBpm = atual.getValue();
+						}
+						if(atualInt > maxBpm){
+							maxBpm = atual.getValue();
+						}						
+					}
+					
+					Interpolator interpolator = new Interpolator(60, 250, minBpm, maxBpm);
+					
+					ite = mesesAno.entrySet()
+							.iterator();
+					
+					while (ite.hasNext()) {
+						Entry<String, Integer> atual = ite.next();
+						atual.setValue(interpolator.interpolate(atual.getValue()));
+										
 					}
 
 					Configuration cfg = new Configuration(

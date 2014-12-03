@@ -1,6 +1,6 @@
 \score {
   \new Staff <<
-    \new Voice \relative g,,, {
+    \new Voice \relative g, {
       \set midiInstrument = #"fx 1 (rain)"
       \voiceOne
       \key g
