@@ -8,7 +8,9 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,6 +33,7 @@ import repositoryhandler.Commit;
 import repositoryhandler.DateCommitFilter;
 import repositoryhandler.GitRepositoryHandler;
 import util.Interpolator;
+import util.NoteMap;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
@@ -166,9 +169,13 @@ public class GitBrowser {
 					ArrayList<Commit> commits = repoHandler
 							.getAllRevisions(true);
 
+					SimpleDateFormat dateFormat = (SimpleDateFormat) DateFormat
+							.getDateInstance();
+					dateFormat.applyPattern("dd/MM/yyyy");
+
 					Object[] dates = {
-							DateFormat.getDateInstance().parse("01/01/2013"),
-							DateFormat.getDateInstance().parse("31/12/2014") };
+							dateFormat.parse("01/01/2013"),
+							dateFormat.parse("31/12/2014") };
 
 					commits = repoHandler.getRevisions(new DateCommitFilter(
 							dates, commits));
@@ -194,35 +201,40 @@ public class GitBrowser {
 						}
 					}
 
-					Map<String, TreeMap<String, Integer>> root = new HashMap<String, TreeMap<String, Integer>>();
+					// Aqui é genérico MERMO
+					@SuppressWarnings("rawtypes")
+					Map<String, TreeMap> root = new HashMap<String, TreeMap>();
 					root.put("months", mesesAno);
+					root.put("noteMap", new NoteMap().getMap());
 
 					Iterator<Entry<String, Integer>> ite = mesesAno.entrySet()
 							.iterator();
-					
-					int minBpm = Integer.MAX_VALUE;
-					int maxBpm = Integer.MIN_VALUE;
-					
+
+					// Cpm = Commits por mês :P
+					int minCpm = Integer.MAX_VALUE;
+					int maxCpm = Integer.MIN_VALUE;
+
 					while (ite.hasNext()) {
 						Entry<String, Integer> atual = ite.next();
 						int atualInt = atual.getValue();
-						if(atualInt < minBpm){
-							minBpm = atual.getValue();
+						if (atualInt < minCpm) {
+							minCpm = atual.getValue();
 						}
-						if(atualInt > maxBpm){
-							maxBpm = atual.getValue();
-						}						
+						if (atualInt > maxCpm) {
+							maxCpm = atual.getValue();
+						}
 					}
-					
-					Interpolator interpolator = new Interpolator(60, 250, minBpm, maxBpm);
-					
-					ite = mesesAno.entrySet()
-							.iterator();
-					
+
+					Interpolator interpolator = new Interpolator(15, 35, minCpm,
+							maxCpm);
+
+					ite = mesesAno.entrySet().iterator();
+
 					while (ite.hasNext()) {
 						Entry<String, Integer> atual = ite.next();
-						atual.setValue(interpolator.interpolate(atual.getValue()));
-										
+						atual.setValue(interpolator.interpolate(atual
+								.getValue()));
+
 					}
 
 					Configuration cfg = new Configuration(

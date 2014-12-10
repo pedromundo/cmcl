@@ -39,12 +39,14 @@ public class GitRepositoryHandler {
 
 		this.repoPath = new File("./" + urlParts[urlParts.length - 1]);
 		if (this.repoPath.exists()) {
-			FileUtils.delete(this.repoPath, FileUtils.RECURSIVE);
-		}
-
+			this.gitObject = Git.open(this.repoPath);
+			monitor.beginTask("Updating references (local)", 100);
+			monitor.endTask();
+		}else{
 		gitObject = Git.cloneRepository().setURI(repositoryUrl)
 				.setDirectory(this.repoPath).setCloneAllBranches(true)
 				.setProgressMonitor(monitor).call();
+		}
 	}
 
 	public ArrayList<Commit> getAllRevisions(Boolean dateAscending)

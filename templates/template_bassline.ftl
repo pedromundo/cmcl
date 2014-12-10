@@ -1,15 +1,18 @@
 \score {
   \new Staff <<
-    \new Voice \relative g, {
-      \set midiInstrument = #"fx 1 (rain)"
+    \new Voice{
+      \set midiInstrument = #"Taiko Drum"
       \voiceOne
       \key g
       \time 4/4
-      <#assign keys = months?keys>
+      \tempo 4 = 120
+      <#assign keys = months?keys>           
       <#list keys as key>
-	\tempo 4 = ${months[key]}
-	c c c c	
-      </#list>
+	<#list 1..4 as i>
+	  <#assign temp = months[key]>
+	  ${noteMap[temp?string]}
+	</#list>
+      </#list>      
     }       
   >>  
   \layout { }
