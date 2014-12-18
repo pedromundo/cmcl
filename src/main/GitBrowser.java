@@ -10,9 +10,9 @@ import java.io.FileWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -184,8 +184,16 @@ public class GitBrowser {
 							commits, "Commit OIDs"));
 					lblCommitsCarregados.setText("Commits Carregados: "
 							+ commits.size());
-
-					TreeMap<String, Integer> mesesAno = new TreeMap<>();
+					
+					//From here its all metric extraction logic, which shouldn't be here AT ALL
+					
+					//Metric #1: Commits / Month
+					TreeMap<String, Integer> commitsMonth = new TreeMap<>();
+					
+					//Metric #2: Commiters / Month
+					TreeMap<String, Integer> committersMonth = new TreeMap<>();
+					
+					//Extracting #1
 
 					for (Commit commit : commits) {
 						@SuppressWarnings("deprecation")
@@ -194,23 +202,18 @@ public class GitBrowser {
 								+ "/"
 								+ Integer.toHexString((commit.getHumanDate()
 										.getMonth() + 1));
-						if (!mesesAno.containsKey(key)) {
-							mesesAno.put(key, 1);
+						if (!commitsMonth.containsKey(key)) {
+							commitsMonth.put(key, 1);
 						} else {
-							mesesAno.put(key, mesesAno.get(key) + 1);
+							commitsMonth.put(key, commitsMonth.get(key) + 1);
 						}
 					}
+					
+					//Min and maximum commits per month, for use in interpolation										
 
-					// Aqui é genérico MERMO
-					@SuppressWarnings("rawtypes")
-					Map<String, TreeMap> root = new HashMap<String, TreeMap>();
-					root.put("months", mesesAno);
-					root.put("noteMap", new NoteMap().getMap());
+					Iterator<Entry<String, Integer>> ite = commitsMonth.entrySet().iterator();
 
-					Iterator<Entry<String, Integer>> ite = mesesAno.entrySet()
-							.iterator();
-
-					// Cpm = Commits por mês :P
+					// Cpm = Commits per month :P
 					int minCpm = Integer.MAX_VALUE;
 					int maxCpm = Integer.MIN_VALUE;
 
@@ -224,18 +227,91 @@ public class GitBrowser {
 							maxCpm = atual.getValue();
 						}
 					}
+					
+					//After counting the commits, let's interpolate the values
 
-					Interpolator interpolator = new Interpolator(15, 35, minCpm,
-							maxCpm);
-
-					ite = mesesAno.entrySet().iterator();
-
+					Interpolator interpolator = new Interpolator(10, 52, minCpm,
+							maxCpm);					
+					
+					//And set them
+					
+					ite = commitsMonth.entrySet().iterator();
 					while (ite.hasNext()) {
 						Entry<String, Integer> atual = ite.next();
 						atual.setValue(interpolator.interpolate(atual
 								.getValue()));
 
+					} //All done with #1
+					
+					//Doing #2 from here eventually patternize to do less iterators (visitor?)
+					
+					TreeMap<String, LinkedHashSet<String>> committersMonthTemp = new TreeMap<>();
+					for (Commit commit : commits) {
+						//Extra work to find out the commiters of each month for use in the con-
+						//solidated metric						
+						@SuppressWarnings("deprecation")
+						String key = ""
+								+ (commit.getHumanDate().getYear() + 1900)
+								+ "/"
+								+ Integer.toHexString((commit.getHumanDate()
+										.getMonth() + 1));
+						if (committersMonthTemp.containsKey(key)) {
+							committersMonthTemp.get(key).add(commit.getCommiter());
+						} else {
+							LinkedHashSet<String> temp = new LinkedHashSet<String>();
+							temp.add(commit.getCommiter());
+							committersMonthTemp.put(key,temp);
+						}
 					}
+					
+					Iterator<Entry<String, LinkedHashSet<String>>> iteTemp = committersMonthTemp.entrySet()
+							.iterator();
+					
+					//Setting the actual committers/month value
+					while (iteTemp.hasNext()) {
+						Entry<String, LinkedHashSet<String>> atual = iteTemp.next();
+						committersMonth.put(atual.getKey(), atual.getValue().size());
+						
+					}
+					
+					//we can reuse the iterator from #1 here					
+					ite = committersMonth.entrySet().iterator();
+					
+					// Ppm = People per month :x
+					int minPpm = Integer.MAX_VALUE;
+					int maxPpm = Integer.MIN_VALUE;
+					
+					while (ite.hasNext()) {
+						Entry<String, Integer> atual = ite.next();
+						int atualInt = atual.getValue();
+						if (atualInt < minPpm) {
+							minPpm = atual.getValue();
+						}
+						if (atualInt > maxPpm) {
+							maxPpm = atual.getValue();
+						}
+					}
+					
+					//also reuse the interpolator
+					interpolator = new Interpolator(2, 8, minPpm,
+							maxPpm);
+					
+					ite = committersMonth.entrySet().iterator();
+					while (ite.hasNext()) {
+						Entry<String, Integer> atual = ite.next();
+						atual.setValue(interpolator.interpolate(atual
+								.getValue()));
+
+					} //All done with #2
+
+					//Metrix extraction ends here
+					
+					//Sending the data do the template
+					@SuppressWarnings("rawtypes")
+					Map<String, TreeMap> root = new HashMap<String, TreeMap>();
+					root.put("commitsMonth", commitsMonth);
+					root.put("noteMap", new NoteMap().getMap());
+					root.put("committersMonth", committersMonth);
 
 					Configuration cfg = new Configuration(
 							Configuration.VERSION_2_3_20);

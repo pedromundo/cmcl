@@ -2,14 +2,14 @@
   \new Staff <<
     \new Voice{
       \set midiInstrument = #"Taiko Drum"
-      \voiceOne
-      \key g
+      \voiceOne      
       \time 4/4
       \tempo 4 = 120
-      <#assign keys = months?keys>           
+      <#assign keys = commitsMonth?keys>           
       <#list keys as key>
-	<#list 1..4 as i>
-	  <#assign temp = months[key]>
+	<#assign numNotas = committersMonth[key]>
+	<#list 1..numNotas as i>
+	  <#assign temp = commitsMonth[key]>
 	  ${noteMap[temp?string]}
 	</#list>
       </#list>      
@@ -24,7 +24,6 @@
     \context {
       \Voice
       \consists "Staff_performer"
-    }
-    \tempo 4 = 220
+    }    
   }
 }
