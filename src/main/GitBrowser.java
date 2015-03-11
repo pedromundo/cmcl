@@ -5,8 +5,10 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -174,8 +176,8 @@ public class GitBrowser {
 					dateFormat.applyPattern("dd/MM/yyyy");
 
 					Object[] dates = {
-							dateFormat.parse("01/01/2013"),
-							dateFormat.parse("31/12/2014") };
+							dateFormat.parse("01/01/2010"),
+							dateFormat.parse("31/04/2013") };
 
 					commits = repoHandler.getRevisions(new DateCommitFilter(
 							dates, commits));
@@ -227,6 +229,40 @@ public class GitBrowser {
 							maxCpm = atual.getValue();
 						}
 					}
+					
+					//temp code to make a table from this
+					
+					try {
+						File file = new File("./commits_month.html");
+			 
+						// if file doesnt exists, then create it
+						if (!file.exists()) {
+							file.createNewFile();
+						}
+			 
+						FileWriter fw = new FileWriter(file.getAbsoluteFile());
+						BufferedWriter bw = new BufferedWriter(fw);
+						bw.write("Commits per month:");
+						bw.write("<table>");
+						bw.write("<tr><th>Month/Year</th><th>Commits</th></tr>");
+						for (Entry<String,Integer> item : commitsMonth.entrySet()) {
+							bw.write("<tr>");
+								bw.write("<td>");
+									bw.write(item.getKey());
+								bw.write("</td>");
+								bw.write("<td>");
+									bw.write(item.getValue().toString());
+								bw.write("</td>");
+							bw.write("</tr>");							
+						}						
+						bw.write("</table>");						
+						bw.close(); 		
+			 
+					} catch (IOException er) {
+						er.printStackTrace();
+					}
+					
+					//Done with text output
 					
 					//After counting the commits, let's interpolate the values
 
@@ -292,6 +328,41 @@ public class GitBrowser {
 						}
 					}
 					
+					//temp code to make a table from this
+					
+					try {
+						File file = new File("./commiters_month.html");
+			 
+						// if file doesnt exists, then create it
+						if (!file.exists()) {
+							file.createNewFile();
+						}
+			 
+						FileWriter fw = new FileWriter(file.getAbsoluteFile());
+						BufferedWriter bw = new BufferedWriter(fw);					
+						
+						bw.write("Commiters per month:");
+						bw.write("<table>");
+						bw.write("<tr><th>Month/Year</th><th>Commiters</th></tr>");
+						for (Entry<String,Integer> item : committersMonth.entrySet()) {
+							bw.write("<tr>");
+								bw.write("<td>");
+									bw.write(item.getKey());
+								bw.write("</td>");
+								bw.write("<td>");
+									bw.write(item.getValue().toString());
+								bw.write("</td>");
+							bw.write("</tr>");							
+						}						
+						bw.write("</table>");
+						bw.close();			
+			 
+					} catch (IOException er) {
+						er.printStackTrace();
+					}
+					
+					//Done with text output
+					
 					//also reuse the interpolator
 					interpolator = new Interpolator(2, 8, minPpm,
 							maxPpm);
@@ -324,6 +395,9 @@ public class GitBrowser {
 					FileWriter fr = new FileWriter("./result1.ly", false);
 
 					temp.process(root, fr);
+					
+					Process p = Runtime.getRuntime().exec("lilypond result1.ly");
+					
 
 				} catch (Exception erro) {
 					erro.printStackTrace();
