@@ -8,7 +8,7 @@ import org.eclipse.jgit.revwalk.RevCommitList;
 import exceptions.BadFilterInitException;
 
 //Base class for commitfilters - strategy pattern, eventually.
-public abstract class CommitFilter {
+public abstract class ICommitFilter {
 	private final int argc;
 	private Object[] args;
 	private RevCommitList<RevCommit> commits;
@@ -16,7 +16,7 @@ public abstract class CommitFilter {
 	// This only depends on our classes and ArrayList, this is the one your
 	// runner classes
 	// should be using
-	public CommitFilter(Integer argc, ArrayList<Commit> commits)
+	public ICommitFilter(Integer argc, ArrayList<Commit> commits)
 			throws BadFilterInitException {
 		if (argc == null || argc < 0) {
 			throw new BadFilterInitException();
@@ -34,7 +34,7 @@ public abstract class CommitFilter {
 
 	// This first constructor depends on jGit, please only use it in your
 	// backend packages
-	CommitFilter(Integer argc, RevCommitList<RevCommit> commits)
+	ICommitFilter(Integer argc, RevCommitList<RevCommit> commits)
 			throws BadFilterInitException {
 		if (argc == null || argc < 0) {
 			throw new BadFilterInitException();

@@ -7,7 +7,7 @@ import org.eclipse.jgit.revwalk.RevCommitList;
 
 import exceptions.BadFilterInitException;
 
-public class StepCommitFilter extends CommitFilter {
+public class StepCommitFilter extends ICommitFilter {
 	/*
 	 * Example filter, takes 1 Integer argument that represents the step through
 	 * which it skips commits when filtering

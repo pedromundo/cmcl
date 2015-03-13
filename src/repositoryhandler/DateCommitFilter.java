@@ -9,7 +9,7 @@ import org.eclipse.jgit.revwalk.RevCommitList;
 import util.RevCommitListQuickSort;
 import exceptions.BadFilterInitException;
 
-public class DateCommitFilter extends CommitFilter {
+public class DateCommitFilter extends ICommitFilter {
 	public DateCommitFilter(Object[] args, ArrayList<Commit> commits)
 			throws BadFilterInitException {
 		super(2, commits);

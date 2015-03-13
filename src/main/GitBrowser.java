@@ -5,19 +5,13 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,6 +21,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import metricsextractor.CommitsPerMonthExtractor;
+import metricsextractor.CommittersPerMonthExtractor;
 import net.miginfocom.swing.MigLayout;
 
 import org.eclipse.jgit.lib.TextProgressMonitor;
@@ -34,7 +30,6 @@ import org.eclipse.jgit.lib.TextProgressMonitor;
 import repositoryhandler.Commit;
 import repositoryhandler.DateCommitFilter;
 import repositoryhandler.GitRepositoryHandler;
-import util.Interpolator;
 import util.NoteMap;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -186,200 +181,15 @@ public class GitBrowser {
 							commits, "Commit OIDs"));
 					lblCommitsCarregados.setText("Commits Carregados: "
 							+ commits.size());
-					
-					//From here its all metric extraction logic, which shouldn't be here AT ALL
-					
-					//Metric #1: Commits / Month
-					TreeMap<String, Integer> commitsMonth = new TreeMap<>();
-					
-					//Metric #2: Commiters / Month
-					TreeMap<String, Integer> committersMonth = new TreeMap<>();
-					
-					//Extracting #1
-
-					for (Commit commit : commits) {
-						@SuppressWarnings("deprecation")
-						String key = ""
-								+ (commit.getHumanDate().getYear() + 1900)
-								+ "/"
-								+ Integer.toHexString((commit.getHumanDate()
-										.getMonth() + 1));
-						if (!commitsMonth.containsKey(key)) {
-							commitsMonth.put(key, 1);
-						} else {
-							commitsMonth.put(key, commitsMonth.get(key) + 1);
-						}
-					}
-					
-					//Min and maximum commits per month, for use in interpolation										
-
-					Iterator<Entry<String, Integer>> ite = commitsMonth.entrySet().iterator();
-
-					// Cpm = Commits per month :P
-					int minCpm = Integer.MAX_VALUE;
-					int maxCpm = Integer.MIN_VALUE;
-
-					while (ite.hasNext()) {
-						Entry<String, Integer> atual = ite.next();
-						int atualInt = atual.getValue();
-						if (atualInt < minCpm) {
-							minCpm = atual.getValue();
-						}
-						if (atualInt > maxCpm) {
-							maxCpm = atual.getValue();
-						}
-					}
-					
-					//temp code to make a table from this
-					
-					try {
-						File file = new File("./commits_month.html");
-			 
-						// if file doesnt exists, then create it
-						if (!file.exists()) {
-							file.createNewFile();
-						}
-			 
-						FileWriter fw = new FileWriter(file.getAbsoluteFile());
-						BufferedWriter bw = new BufferedWriter(fw);
-						bw.write("Commits per month:");
-						bw.write("<table>");
-						bw.write("<tr><th>Month/Year</th><th>Commits</th></tr>");
-						for (Entry<String,Integer> item : commitsMonth.entrySet()) {
-							bw.write("<tr>");
-								bw.write("<td>");
-									bw.write(item.getKey());
-								bw.write("</td>");
-								bw.write("<td>");
-									bw.write(item.getValue().toString());
-								bw.write("</td>");
-							bw.write("</tr>");							
-						}						
-						bw.write("</table>");						
-						bw.close(); 		
-			 
-					} catch (IOException er) {
-						er.printStackTrace();
-					}
-					
-					//Done with text output
-					
-					//After counting the commits, let's interpolate the values
-
-					Interpolator interpolator = new Interpolator(10, 52, minCpm,
-							maxCpm);					
-					
-					//And set them
-					
-					ite = commitsMonth.entrySet().iterator();
-					while (ite.hasNext()) {
-						Entry<String, Integer> atual = ite.next();
-						atual.setValue(interpolator.interpolate(atual
-								.getValue()));
-
-					} //All done with #1
-					
-					//Doing #2 from here eventually patternize to do less iterators (visitor?)
-					
-					TreeMap<String, LinkedHashSet<String>> committersMonthTemp = new TreeMap<>();
-					for (Commit commit : commits) {
-						//Extra work to find out the commiters of each month for use in the con-
-						//solidated metric						
-						@SuppressWarnings("deprecation")
-						String key = ""
-								+ (commit.getHumanDate().getYear() + 1900)
-								+ "/"
-								+ Integer.toHexString((commit.getHumanDate()
-										.getMonth() + 1));
-						if (committersMonthTemp.containsKey(key)) {
-							committersMonthTemp.get(key).add(commit.getCommiter());
-						} else {
-							LinkedHashSet<String> temp = new LinkedHashSet<String>();
-							temp.add(commit.getCommiter());
-							committersMonthTemp.put(key,temp);
-						}
-					}
-					
-					Iterator<Entry<String, LinkedHashSet<String>>> iteTemp = committersMonthTemp.entrySet()
-							.iterator();
-					
-					//Setting the actual committers/month value
-					while (iteTemp.hasNext()) {
-						Entry<String, LinkedHashSet<String>> atual = iteTemp.next();
-						committersMonth.put(atual.getKey(), atual.getValue().size());
-						
-					}
-					
-					//we can reuse the iterator from #1 here					
-					ite = committersMonth.entrySet().iterator();
-					
-					// Ppm = People per month :x
-					int minPpm = Integer.MAX_VALUE;
-					int maxPpm = Integer.MIN_VALUE;
-					
-					while (ite.hasNext()) {
-						Entry<String, Integer> atual = ite.next();
-						int atualInt = atual.getValue();
-						if (atualInt < minPpm) {
-							minPpm = atual.getValue();
-						}
-						if (atualInt > maxPpm) {
-							maxPpm = atual.getValue();
-						}
-					}
-					
-					//temp code to make a table from this
-					
-					try {
-						File file = new File("./commiters_month.html");
-			 
-						// if file doesnt exists, then create it
-						if (!file.exists()) {
-							file.createNewFile();
-						}
-			 
-						FileWriter fw = new FileWriter(file.getAbsoluteFile());
-						BufferedWriter bw = new BufferedWriter(fw);					
-						
-						bw.write("Commiters per month:");
-						bw.write("<table>");
-						bw.write("<tr><th>Month/Year</th><th>Commiters</th></tr>");
-						for (Entry<String,Integer> item : committersMonth.entrySet()) {
-							bw.write("<tr>");
-								bw.write("<td>");
-									bw.write(item.getKey());
-								bw.write("</td>");
-								bw.write("<td>");
-									bw.write(item.getValue().toString());
-								bw.write("</td>");
-							bw.write("</tr>");							
-						}						
-						bw.write("</table>");
-						bw.close();			
-			 
-					} catch (IOException er) {
-						er.printStackTrace();
-					}
-					
-					//Done with text output
-					
-					//also reuse the interpolator
-					interpolator = new Interpolator(2, 8, minPpm,
-							maxPpm);
-					
-					ite = committersMonth.entrySet().iterator();
-					while (ite.hasNext()) {
-						Entry<String, Integer> atual = ite.next();
-						atual.setValue(interpolator.interpolate(atual
-								.getValue()));
-
-					} //All done with #2
 
 					//Metrix extraction ends here
 					
+					Map<String, Integer> commitsMonth = new CommitsPerMonthExtractor().getMetrics(commits);
+					Map<String, Integer> committersMonth = new CommittersPerMonthExtractor().getMetrics(commits);
+					
 					//Sending the data do the template
 					@SuppressWarnings("rawtypes")
-					Map<String, TreeMap> root = new HashMap<String, TreeMap>();
+					Map<String, Map> root = new HashMap<String, Map>();					
 					root.put("commitsMonth", commitsMonth);
 					root.put("noteMap", new NoteMap().getMap());
 					root.put("committersMonth", committersMonth);
@@ -396,7 +206,7 @@ public class GitBrowser {
 
 					temp.process(root, fr);
 					
-					Process p = Runtime.getRuntime().exec("lilypond result1.ly");
+					Runtime.getRuntime().exec("lilypond result1.ly");
 					
 
 				} catch (Exception erro) {

@@ -8,7 +8,7 @@ import org.eclipse.jgit.revwalk.RevCommitList;
 import util.RevCommitListQuickSort;
 import exceptions.BadFilterInitException;
 
-public class RangeCommitFilter extends CommitFilter {
+public class RangeCommitFilter extends ICommitFilter {
 	/*
 	 * Example filter, takes 2 String arguments that represent the starting and
 	 * ending commits of the range to be filtered, respectively.
