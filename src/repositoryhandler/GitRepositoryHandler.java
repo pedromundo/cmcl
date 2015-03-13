@@ -69,7 +69,7 @@ public class GitRepositoryHandler {
 		return ret;
 	}
 
-	public ArrayList<Commit> getRevisions(ICommitFilter filter)
+	public ArrayList<Commit> getRevisions(CommitFilter filter)
 			throws NoHeadException, GitAPIException {
 		RevCommitList<RevCommit> temp = filter.getFilteredCommits();
 		ArrayList<Commit> ret = new ArrayList<Commit>();

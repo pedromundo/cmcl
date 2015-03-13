@@ -5,8 +5,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,9 +29,6 @@ import repositoryhandler.Commit;
 import repositoryhandler.DateCommitFilter;
 import repositoryhandler.GitRepositoryHandler;
 import util.NoteMap;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateExceptionHandler;
 
 public class GitBrowser {
 
@@ -193,22 +188,7 @@ public class GitBrowser {
 					root.put("commitsMonth", commitsMonth);
 					root.put("noteMap", new NoteMap().getMap());
 					root.put("committersMonth", committersMonth);
-
-					Configuration cfg = new Configuration(
-							Configuration.VERSION_2_3_20);
-					cfg.setDirectoryForTemplateLoading(new File("./templates"));
-					cfg.setDefaultEncoding("UTF-8");
-					cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-
-					Template temp = cfg.getTemplate("template_bassline.ftl");
-
-					FileWriter fr = new FileWriter("./result1.ly", false);
-
-					temp.process(root, fr);
 					
-					Runtime.getRuntime().exec("lilypond result1.ly");
-					
-
 				} catch (Exception erro) {
 					erro.printStackTrace();
 					JOptionPane
@@ -217,6 +197,7 @@ public class GitBrowser {
 				}
 			}
 		});
+		
 		frmGitrepobrowser.getContentPane().add(btnCarregarCommits, "cell 1 4");
 
 		lblCommitsCarregados = new JLabel("Commits Carregados: N/A");
