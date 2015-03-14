@@ -1,28 +1,44 @@
 package core;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
+
+import metricsextractor.IMetricsExtractor;
+
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoHeadException;
 
 import repositoryhandler.Commit;
-import repositoryhandler.CommitFilter;
 import repositoryhandler.GitRepositoryHandler;
+import util.NoteMap;
+import freemarker.template.TemplateException;
 
 public class Maestro {
 	
-	WorkingSet ws;
+	private WorkingSet ws;
 
-	public Maestro() {
-		this.ws = new WorkingSet();		
+	public Maestro(WorkingSet ws) {
+		this.ws = ws;		
 	}
 	
-	public void makeMusic(){
+	public void makeMusic() throws NoHeadException, GitAPIException, IOException, TemplateException{
 		GitRepositoryHandler handler = this.ws.getRepoHandler();
 		
 		ArrayList<Commit> commits = new ArrayList<Commit>();
+		commits = handler.getRevisions(this.ws.getFilters());
 		
-		for(CommitFilter filtro : ws.getFilters()){
-			commit			
+		Map<String, Map> data = new TreeMap<String, Map>();
+		
+		for(IMetricsExtractor extractor : this.ws.getExtractors()){
+			data.put(extractor.getOutputName(), extractor.getMetrics(commits));			
 		}
 		
-		handler.getRevisions(filter)   handler.getAllRevisions(true);
+		//Lets always pass this map, because there must always be a way to map numbers to notes.		
+		data.put("noteMap", NoteMap.getInstance());
+		
+		this.ws.getSoundrenderer().Render(this.ws.getTemplateName(), data, this.ws.getFileName());
+		
 	}
 }

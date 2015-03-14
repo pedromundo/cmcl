@@ -7,4 +7,5 @@ import repositoryhandler.Commit;
 
 public interface IMetricsExtractor {	
 	Map<String, Integer> getMetrics(ArrayList<Commit> commits);
+	String getOutputName();
 }

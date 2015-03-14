@@ -74,4 +74,9 @@ public class CommitsPerMonthExtractor implements IMetricsExtractor {
 		return commitsMonth;
 	}
 
+	@Override
+	public String getOutputName() {
+		return "commitsMonth";
+	}
+
 }

@@ -80,4 +80,9 @@ public class CommittersPerMonthExtractor implements IMetricsExtractor {
 		return committersMonth;
 	}
 
+	@Override
+	public String getOutputName() {
+		return "committersMonth";
+	}
+
 }

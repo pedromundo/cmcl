@@ -38,13 +38,25 @@ public class GitRepositoryHandler {
 
 		this.repoPath = new File("./" + urlParts[urlParts.length - 1]);
 		if (this.repoPath.exists()) {
-			this.gitObject = Git.open(this.repoPath);
-			monitor.beginTask("Updating references (local)", 100);
-			monitor.endTask();
+			this.gitObject = Git.open(this.repoPath);			
 		}else{
 		gitObject = Git.cloneRepository().setURI(repositoryUrl)
 				.setDirectory(this.repoPath).setCloneAllBranches(true)
 				.setProgressMonitor(monitor).call();
+		}
+	}
+	
+	public GitRepositoryHandler(String repositoryUrl)
+			throws InvalidRemoteException, TransportException, GitAPIException,
+			IOException {
+		String urlParts[] = repositoryUrl.split("/");
+
+		this.repoPath = new File("./" + urlParts[urlParts.length - 1]);
+		if (this.repoPath.exists()) {
+			this.gitObject = Git.open(this.repoPath);			
+		}else{
+		gitObject = Git.cloneRepository().setURI(repositoryUrl)
+				.setDirectory(this.repoPath).setCloneAllBranches(true).call();
 		}
 	}
 
