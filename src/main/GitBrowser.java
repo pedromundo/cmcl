@@ -1,23 +1,16 @@
 package main;
 
-import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.table.DefaultTableModel;
 
 import metricsextractor.CommitsPerMonthExtractor;
 import metricsextractor.CommittersPerMonthExtractor;
@@ -25,12 +18,10 @@ import net.miginfocom.swing.MigLayout;
 
 import org.eclipse.jgit.lib.TextProgressMonitor;
 
-import core.Maestro;
-import core.WorkingSet;
-import repositoryhandler.Commit;
 import repositoryhandler.DateCommitFilter;
 import repositoryhandler.GitRepositoryHandler;
-import util.NoteMap;
+import core.Maestro;
+import core.WorkingSet;
 
 public class GitBrowser {
 	
@@ -52,9 +43,7 @@ public class GitBrowser {
 
 	private JFrame frmGitrepobrowser;
 	private JLabel lblUrlDoRepositrio;
-	private JTextField txtRepoURL;
-	private GitRepositoryHandler repoHandler;
-	private TextProgressMonitor monitorClone;
+	private JTextField txtRepoURL;	
 
 	private JButton btnCarregarCommits;
 
