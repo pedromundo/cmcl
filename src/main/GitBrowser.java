@@ -15,7 +15,7 @@ import javax.swing.JTextField;
 import metricsextractor.CommitsPerMonthExtractor;
 import metricsextractor.CommittersPerMonthExtractor;
 import net.miginfocom.swing.MigLayout;
-import repositoryhandler.DateCommitFilter;
+import repositorybrowser.DateCommitFilter;
 import core.Maestro;
 import core.WorkingSet;
 

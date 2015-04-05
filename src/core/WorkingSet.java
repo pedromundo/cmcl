@@ -7,8 +7,8 @@ import metricsextractor.IMetricsExtractor;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 
-import repositoryhandler.CommitFilter;
-import repositoryhandler.GitRepositoryHandler;
+import repositorybrowser.CommitFilter;
+import repositorybrowser.GitRepositoryHandler;
 import soundrenderer.SoundRenderer;
 
 public class WorkingSet {

@@ -2,7 +2,7 @@ package util;
 
 import java.util.ArrayList;
 
-import repositoryhandler.Commit;
+import repositorybrowser.Commit;
 
 public class ArrayListQuickSort {
 	private ArrayList<Commit> commits;

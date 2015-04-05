@@ -1,4 +1,4 @@
-package repositoryhandler;
+package repositorybrowser;
 
 import java.util.Date;
 

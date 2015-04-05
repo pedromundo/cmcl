@@ -10,8 +10,8 @@ import metricsextractor.IMetricsExtractor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 
-import repositoryhandler.Commit;
-import repositoryhandler.GitRepositoryHandler;
+import repositorybrowser.Commit;
+import repositorybrowser.GitRepositoryHandler;
 import util.NoteMap;
 import freemarker.template.TemplateException;
 

@@ -1,4 +1,4 @@
-package repositoryhandler;
+package repositorybrowser;
 
 import java.io.File;
 import java.io.IOException;

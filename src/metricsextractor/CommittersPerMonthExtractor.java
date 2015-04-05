@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import repositoryhandler.Commit;
+import repositorybrowser.Commit;
 import util.Interpolator;
 
 public class CommittersPerMonthExtractor implements IMetricsExtractor {

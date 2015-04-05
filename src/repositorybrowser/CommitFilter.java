@@ -1,4 +1,4 @@
-package repositoryhandler;
+package repositorybrowser;
 
 import java.util.ArrayList;
 
@@ -13,8 +13,7 @@ public abstract class CommitFilter {
 	private RevCommitList<RevCommit> commits;
 
 	// This only depends on our classes and ArrayList, this is the one your
-	// runner classes
-	// should be using
+	// runner classes should be using
 	public CommitFilter(Integer argc, ArrayList<Commit> commits)
 			throws BadFilterInitException {
 		if (argc == null || argc < 0) {
