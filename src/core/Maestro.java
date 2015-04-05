@@ -16,29 +16,36 @@ import util.NoteMap;
 import freemarker.template.TemplateException;
 
 public class Maestro {
-	
+
 	private WorkingSet ws;
 
 	public Maestro(WorkingSet ws) {
-		this.ws = ws;		
+		this.ws = ws;
 	}
-	
-	public void makeMusic() throws NoHeadException, GitAPIException, IOException, TemplateException{
+
+	public void makeMusic() throws NoHeadException, GitAPIException,
+			IOException, TemplateException {
 		GitRepositoryHandler handler = this.ws.getRepoHandler();
-		
+
 		ArrayList<Commit> commits = new ArrayList<Commit>();
 		commits = handler.getRevisions(this.ws.getFilters());
-		
+
 		Map<String, Map> data = new TreeMap<String, Map>();
-		
-		for(IMetricsExtractor extractor : this.ws.getExtractors()){
-			data.put(extractor.getOutputName(), extractor.getMetrics(commits));			
+
+		for (IMetricsExtractor extractor : this.ws.getExtractors()) {
+			data.put(extractor.getOutputName(), extractor.getMetrics(commits));
 		}
-		
-		//Lets always pass this map, because there must always be a way to map numbers to notes.		
+
+		// Lets always pass this map, because there must always be a way to map
+		// numbers to notes.
 		data.put("noteMap", NoteMap.getInstance());
-		
-		this.ws.getSoundrenderer().Render(this.ws.getTemplateName(), data, this.ws.getFileName());
-		
+
+		if (this.ws.getFileName() != null) {
+			this.ws.getSoundrenderer().Render(this.ws.getTemplateName(), data,
+					this.ws.getFileName());
+		} else {
+			this.ws.getSoundrenderer().Render(this.ws.getTemplateName(), data);
+		}
+
 	}
 }

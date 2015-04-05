@@ -97,8 +97,6 @@ public class GitBrowser {
 							ws.putExtractor(new CommitsPerMonthExtractor());
 							ws.putExtractor(new CommittersPerMonthExtractor());
 							
-							ws.setFileName("Duse");
-							
 							Maestro vivaldi = new Maestro(ws);							
 							vivaldi.makeMusic();
 							
