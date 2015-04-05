@@ -15,16 +15,12 @@ import javax.swing.JTextField;
 import metricsextractor.CommitsPerMonthExtractor;
 import metricsextractor.CommittersPerMonthExtractor;
 import net.miginfocom.swing.MigLayout;
-
-import org.eclipse.jgit.lib.TextProgressMonitor;
-
 import repositoryhandler.DateCommitFilter;
-import repositoryhandler.GitRepositoryHandler;
 import core.Maestro;
 import core.WorkingSet;
 
 public class GitBrowser {
-	
+
 	/**
 	 * Launch the application.
 	 */
@@ -43,7 +39,7 @@ public class GitBrowser {
 
 	private JFrame frmGitrepobrowser;
 	private JLabel lblUrlDoRepositrio;
-	private JTextField txtRepoURL;	
+	private JTextField txtRepoURL;
 
 	private JButton btnCarregarCommits;
 
@@ -58,7 +54,7 @@ public class GitBrowser {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
+
 		frmGitrepobrowser = new JFrame();
 		frmGitrepobrowser.setTitle("Git Repository Browser");
 		frmGitrepobrowser.setBounds(100, 100, 640, 82);
@@ -75,46 +71,43 @@ public class GitBrowser {
 		frmGitrepobrowser.getContentPane().add(txtRepoURL,
 				"cell 2 1 2 1,alignx center,aligny center");
 		txtRepoURL.setColumns(30);
-		
-				btnCarregarCommits = new JButton("Gerar Sonorização!");
-				btnCarregarCommits.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						try {					
-							
-							SimpleDateFormat dateFormat = (SimpleDateFormat) DateFormat
-									.getDateInstance();
-							dateFormat.applyPattern("dd/MM/yyyy");
 
-							Object[] dates = {
-									dateFormat.parse("01/01/2013"),
-									dateFormat.parse("31/12/2014") };
-							
-							WorkingSet ws = new WorkingSet("template_bassline");					
-							ws.initRepoHandler(txtRepoURL.getText());					
-							ws.setFilter(new DateCommitFilter(dates, ws.getRepoHandler().getAllRevisions(true)));
-							
-							ws.putExtractor(new CommitsPerMonthExtractor());
-							ws.putExtractor(new CommittersPerMonthExtractor());
-							
-							Maestro vivaldi = new Maestro(ws);							
-							vivaldi.makeMusic();
-							
-							JOptionPane
-							.showMessageDialog(frmGitrepobrowser,
-									"Sonorização gerada com sucesso! :D");
-							
-							
-						} catch (Exception erro) {
-							erro.printStackTrace();
-							JOptionPane
-									.showMessageDialog(frmGitrepobrowser,
-											"Ocorreu um problema ao gerar a sonorização :(");
-						}
-					}
-				});
-				
-				frmGitrepobrowser.getContentPane().add(btnCarregarCommits, "cell 4 1");
+		btnCarregarCommits = new JButton("Gerar Sonorização!");
+		btnCarregarCommits.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+
+					SimpleDateFormat dateFormat = (SimpleDateFormat) DateFormat
+							.getDateInstance();
+					dateFormat.applyPattern("dd/MM/yyyy");
+
+					Object[] dates = { dateFormat.parse("01/01/2013"),
+							dateFormat.parse("31/12/2014") };
+
+					WorkingSet ws = new WorkingSet("template_bassline");
+					ws.initRepoHandler(txtRepoURL.getText());
+					ws.setFilter(new DateCommitFilter(dates, ws
+							.getRepoHandler().getAllRevisions(true)));
+
+					ws.putExtractor(new CommitsPerMonthExtractor());
+					ws.putExtractor(new CommittersPerMonthExtractor());
+
+					Maestro vivaldi = new Maestro(ws);
+					vivaldi.makeMusic();
+
+					JOptionPane.showMessageDialog(frmGitrepobrowser,
+							"Sonorização gerada com sucesso! :D");
+
+				} catch (Exception erro) {
+					erro.printStackTrace();
+					JOptionPane.showMessageDialog(frmGitrepobrowser,
+							"Ocorreu um problema ao gerar a sonorização :(");
+				}
+			}
+		});
+
+		frmGitrepobrowser.getContentPane().add(btnCarregarCommits, "cell 4 1");
 	}
 
 }

@@ -17,9 +17,10 @@ public class CommitsPerMonthExtractor implements IMetricsExtractor {
 
 	@Override
 	public Map<String, Integer> getMetrics(ArrayList<Commit> commits) {
-		//From here its all metric extraction logic, which shouldn't be here AT ALL
-		
-		//Metric #1: Commits / Month
+		// From here its all metric extraction logic, which shouldn't be here AT
+		// ALL
+
+		// Metric #1: Commits / Month
 		TreeMap<String, Integer> commitsMonth = new TreeMap<>();
 
 		for (Commit commit : commits) {
@@ -27,18 +28,19 @@ public class CommitsPerMonthExtractor implements IMetricsExtractor {
 			String key = ""
 					+ (commit.getHumanDate().getYear() + 1900)
 					+ "/"
-					+ Integer.toHexString((commit.getHumanDate()
-							.getMonth() + 1));
+					+ Integer
+							.toHexString((commit.getHumanDate().getMonth() + 1));
 			if (!commitsMonth.containsKey(key)) {
 				commitsMonth.put(key, 1);
 			} else {
 				commitsMonth.put(key, commitsMonth.get(key) + 1);
 			}
 		}
-		
-		//Min and maximum commits per month, for use in interpolation										
 
-		Iterator<Entry<String, Integer>> ite = commitsMonth.entrySet().iterator();
+		// Min and maximum commits per month, for use in interpolation
+
+		Iterator<Entry<String, Integer>> ite = commitsMonth.entrySet()
+				.iterator();
 
 		// Cpm = Commits per month :P
 		int minCpm = Integer.MAX_VALUE;
@@ -53,24 +55,22 @@ public class CommitsPerMonthExtractor implements IMetricsExtractor {
 			if (atualInt > maxCpm) {
 				maxCpm = atual.getValue();
 			}
-		}		
-		
-		//After counting the commits, let's interpolate the values
+		}
 
-		Interpolator interpolator = new Interpolator(10, 52, minCpm,
-				maxCpm);					
-		
-		//And set them
-		
+		// After counting the commits, let's interpolate the values
+
+		Interpolator interpolator = new Interpolator(10, 52, minCpm, maxCpm);
+
+		// And set them
+
 		ite = commitsMonth.entrySet().iterator();
 		while (ite.hasNext()) {
 			Entry<String, Integer> atual = ite.next();
-			atual.setValue(interpolator.interpolate(atual
-					.getValue()));
+			atual.setValue(interpolator.interpolate(atual.getValue()));
 
 		}
-		
-		//All done :) 
+
+		// All done :)
 		return commitsMonth;
 	}
 

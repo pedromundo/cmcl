@@ -5,7 +5,8 @@ import java.util.Map;
 
 import repositoryhandler.Commit;
 
-public interface IMetricsExtractor {	
+public interface IMetricsExtractor {
 	Map<String, Integer> getMetrics(ArrayList<Commit> commits);
+
 	String getOutputName();
 }

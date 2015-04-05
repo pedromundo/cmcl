@@ -30,12 +30,12 @@ public abstract class CommitFilter {
 		}
 
 	}
-	
+
 	public CommitFilter(Integer argc, CommitFilter filter)
 			throws BadFilterInitException {
 		if (argc == null || argc < 0) {
 			throw new BadFilterInitException();
-		} else {			
+		} else {
 			this.argc = argc;
 			this.commits = filter.getFilteredCommits();
 			this.setArgs(new Object[argc]);

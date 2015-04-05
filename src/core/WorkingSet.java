@@ -14,28 +14,28 @@ import soundrenderer.SoundRenderer;
 public class WorkingSet {
 
 	private ArrayList<IMetricsExtractor> extractors;
-	private CommitFilter filter;	
+	private CommitFilter filter;
 	private GitRepositoryHandler repoHandler;
 	private SoundRenderer soundRenderer;
 	private String fileName;
 	private String templateName;
 
 	public WorkingSet(String templateName) {
-		this.extractors = new ArrayList<IMetricsExtractor>();		
+		this.extractors = new ArrayList<IMetricsExtractor>();
 		this.repoHandler = new GitRepositoryHandler();
 		this.soundRenderer = new SoundRenderer();
 		this.templateName = templateName;
 	}
 
 	public WorkingSet(String fileName, String templateName) {
-		this.extractors = new ArrayList<IMetricsExtractor>();		
+		this.extractors = new ArrayList<IMetricsExtractor>();
 		this.repoHandler = new GitRepositoryHandler();
 		this.soundRenderer = new SoundRenderer();
 		this.fileName = fileName;
 		this.templateName = templateName;
 	}
 
-	public void clearExtractors(){
+	public void clearExtractors() {
 		this.extractors = new ArrayList<IMetricsExtractor>();
 	}
 

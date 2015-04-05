@@ -19,41 +19,43 @@ public class CommittersPerMonthExtractor implements IMetricsExtractor {
 	public Map<String, Integer> getMetrics(ArrayList<Commit> commits) {
 		TreeMap<String, Integer> committersMonth = new TreeMap<>();
 		TreeMap<String, LinkedHashSet<String>> committersMonthTemp = new TreeMap<>();
-		
+
 		for (Commit commit : commits) {
-			//Extra work to find out the commiters of each month for use in the con-
-			//solidated metric, life's a b*tch	
+			// Extra work to find out the commiters of each month for use in the
+			// con-
+			// solidated metric, life's a b*tch
 			@SuppressWarnings("deprecation")
 			String key = ""
 					+ (commit.getHumanDate().getYear() + 1900)
 					+ "/"
-					+ Integer.toHexString((commit.getHumanDate()
-							.getMonth() + 1));
+					+ Integer
+							.toHexString((commit.getHumanDate().getMonth() + 1));
 			if (committersMonthTemp.containsKey(key)) {
 				committersMonthTemp.get(key).add(commit.getCommiter());
 			} else {
 				LinkedHashSet<String> temp = new LinkedHashSet<String>();
 				temp.add(commit.getCommiter());
-				committersMonthTemp.put(key,temp);
+				committersMonthTemp.put(key, temp);
 			}
 		}
-		
-		Iterator<Entry<String, LinkedHashSet<String>>> iteTemp = committersMonthTemp.entrySet()
-				.iterator();
-		
-		//Setting the actual committers/month value
+
+		Iterator<Entry<String, LinkedHashSet<String>>> iteTemp = committersMonthTemp
+				.entrySet().iterator();
+
+		// Setting the actual committers/month value
 		while (iteTemp.hasNext()) {
 			Entry<String, LinkedHashSet<String>> atual = iteTemp.next();
 			committersMonth.put(atual.getKey(), atual.getValue().size());
-			
+
 		}
-		
-		Iterator<Entry<String, Integer>> ite = committersMonth.entrySet().iterator();
-		
+
+		Iterator<Entry<String, Integer>> ite = committersMonth.entrySet()
+				.iterator();
+
 		// Ppm = People per month
 		int minPpm = Integer.MAX_VALUE;
 		int maxPpm = Integer.MIN_VALUE;
-		
+
 		while (ite.hasNext()) {
 			Entry<String, Integer> atual = ite.next();
 			int atualInt = atual.getValue();
@@ -64,19 +66,17 @@ public class CommittersPerMonthExtractor implements IMetricsExtractor {
 				maxPpm = atual.getValue();
 			}
 		}
-		
-		Interpolator interpolator = new Interpolator(2, 8, minPpm,
-				maxPpm);
-		
+
+		Interpolator interpolator = new Interpolator(2, 8, minPpm, maxPpm);
+
 		ite = committersMonth.entrySet().iterator();
 		while (ite.hasNext()) {
 			Entry<String, Integer> atual = ite.next();
-			atual.setValue(interpolator.interpolate(atual
-					.getValue()));
+			atual.setValue(interpolator.interpolate(atual.getValue()));
 
 		}
-		//all done :)
-		
+		// all done :)
+
 		return committersMonth;
 	}
 

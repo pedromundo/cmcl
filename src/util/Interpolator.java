@@ -15,7 +15,7 @@ public class Interpolator {
 
 	public int interpolate(int value) {
 		float y = this.minTargetValue
-				+ (((value - this.minOriginalValue) / (float)(this.maxOriginalValue - this.minOriginalValue)) * (this.maxTargetValue - this.minTargetValue));
+				+ (((value - this.minOriginalValue) / (float) (this.maxOriginalValue - this.minOriginalValue)) * (this.maxTargetValue - this.minTargetValue));
 		return (int) y;
 	}
 
