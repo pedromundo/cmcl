@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.1.8" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
-  associations="true" dependencies="false" nesting-relationships="true">  
+  associations="true" dependencies="true" nesting-relationships="true">  
   <package id="1" language="java" name="soundrenderer" project="cmcl" file="/cmcl/src/soundrenderer" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="181" width="269" x="12" y="7"/>    
+    <position height="170" width="266" x="10" y="15"/>    
     <display autosize="false" stereotype="true" sort-features="false" accessors="true"/>  
   </package>  
   <class id="2" language="java" name="soundrenderer.SoundRenderer" project="cmcl" 
     file="/cmcl/src/soundrenderer/SoundRenderer.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="146" y="111"/>    
+    <position height="-1" width="-1" x="143" y="119"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
