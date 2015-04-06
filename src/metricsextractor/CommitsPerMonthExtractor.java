@@ -17,9 +17,6 @@ public class CommitsPerMonthExtractor implements IMetricsExtractor {
 
 	@Override
 	public Map<String, Integer> getMetrics(ArrayList<Commit> commits) {
-		// From here its all metric extraction logic, which shouldn't be here AT
-		// ALL
-
 		// Metric #1: Commits / Month
 		TreeMap<String, Integer> commitsMonth = new TreeMap<>();
 

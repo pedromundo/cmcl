@@ -11,10 +11,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
-public class SoundRenderer {
-
-	public SoundRenderer() {
-	}
+public class SoundRenderer {	
 
 	public void Render(String templateName, Map<String, Map> data)
 			throws IOException, TemplateException {
