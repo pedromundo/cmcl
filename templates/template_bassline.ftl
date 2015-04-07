@@ -7,8 +7,8 @@
       \tempo 4 = 120
       <#assign keys = commitsMonth?keys>           
       <#list keys as key>
-	<#assign numNotas = committersMonth[key]>
-	<#list 1..numNotas as i>
+	<#assign numNotes = committersMonth[key]>
+	<#list 1..numNotes as i>
 	  <#assign temp = commitsMonth[key]>
 	  ${noteMap[temp?string]}
 	</#list>

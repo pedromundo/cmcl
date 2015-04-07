@@ -21,9 +21,8 @@ public class CommittersPerMonthExtractor implements IMetricsExtractor {
 		TreeMap<String, LinkedHashSet<String>> committersMonthTemp = new TreeMap<>();
 
 		for (Commit commit : commits) {
-			// Extra work to find out the commiters of each month for use in the
-			// con-
-			// solidated metric, life's a b*tch
+			// A lot of extra work to find out the commiters of each month for
+			// use in the consolidated metric.
 			@SuppressWarnings("deprecation")
 			String key = ""
 					+ (commit.getHumanDate().getYear() + 1900)
@@ -46,7 +45,6 @@ public class CommittersPerMonthExtractor implements IMetricsExtractor {
 		while (iteTemp.hasNext()) {
 			Entry<String, LinkedHashSet<String>> atual = iteTemp.next();
 			committersMonth.put(atual.getKey(), atual.getValue().size());
-
 		}
 
 		Iterator<Entry<String, Integer>> ite = committersMonth.entrySet()
@@ -71,12 +69,10 @@ public class CommittersPerMonthExtractor implements IMetricsExtractor {
 
 		ite = committersMonth.entrySet().iterator();
 		while (ite.hasNext()) {
-			Entry<String, Integer> atual = ite.next();
-			atual.setValue(interpolator.interpolate(atual.getValue()));
-
+			Entry<String, Integer> current = ite.next();
+			current.setValue(interpolator.interpolate(current.getValue()));
 		}
-		// all done :)
-
+		// all done
 		return committersMonth;
 	}
 
