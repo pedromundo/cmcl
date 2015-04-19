@@ -41,7 +41,7 @@ public class GitBrowser {
 	private JLabel lblUrlDoRepositrio;
 	private JTextField txtRepoURL;
 
-	private JButton btnCarregarCommits;
+	private JButton btnLoadCommits;
 
 	/**
 	 * Create the application.
@@ -56,14 +56,14 @@ public class GitBrowser {
 	private void initialize() {
 
 		frmGitrepobrowser = new JFrame();
-		frmGitrepobrowser.setTitle("Git Repository Browser");
-		frmGitrepobrowser.setBounds(100, 100, 640, 82);
+		frmGitrepobrowser.setTitle("Presto");
+		frmGitrepobrowser.setBounds(100, 100, 540, 82);
 		frmGitrepobrowser.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmGitrepobrowser.getContentPane().setLayout(
 				new MigLayout("", "[][grow][][][][grow]",
 						"[][][][][][][][grow][][][][][][][]"));
 
-		lblUrlDoRepositrio = new JLabel("URL Do Repositório:");
+		lblUrlDoRepositrio = new JLabel("Repository URI:");
 		frmGitrepobrowser.getContentPane().add(lblUrlDoRepositrio,
 				"cell 1 1,aligny center");
 
@@ -72,8 +72,8 @@ public class GitBrowser {
 				"cell 2 1 2 1,alignx center,aligny center");
 		txtRepoURL.setColumns(30);
 
-		btnCarregarCommits = new JButton("Gerar Sonorização!");
-		btnCarregarCommits.addMouseListener(new MouseAdapter() {
+		btnLoadCommits = new JButton("Sonify!");
+		btnLoadCommits.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
@@ -97,17 +97,17 @@ public class GitBrowser {
 					vivaldi.makeMusic();
 
 					JOptionPane.showMessageDialog(frmGitrepobrowser,
-							"Sonorização gerada com sucesso! :D");
+							"Sonification Generated Successfully! :D");
 
 				} catch (Exception erro) {
 					erro.printStackTrace();
 					JOptionPane.showMessageDialog(frmGitrepobrowser,
-							"Ocorreu um problema ao gerar a sonorização :(");
+							"Something went wrong :(");
 				}
 			}
 		});
 
-		frmGitrepobrowser.getContentPane().add(btnCarregarCommits, "cell 4 1");
+		frmGitrepobrowser.getContentPane().add(btnLoadCommits, "cell 4 1");
 	}
 
 }
